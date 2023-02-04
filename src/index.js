@@ -20,7 +20,11 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user } = request;
+  if ( user.pro === true || user.todos.length < 10) {
+    return next();
+  }
+  return response.status(403).json({ error: "You cannot create more than 10 todos on free plan" });
 }
 
 function checksTodoExists(request, response, next) {
