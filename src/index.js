@@ -28,11 +28,36 @@ function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers;
+  const { id } = request.params;
+
+  const user = users.find(user => user.username === username);
+  if (!user) {
+    return response.status(404).json({ error: "User not found" });
+  }
+
+  const regexExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
+  if (!regexExp.test(id)) {
+    return response.status(400).json({ error: "Id not valid" });
+  }
+
+  const foundTodo = user.todos.find(todo => todo.id === id);
+  if (!foundTodo) {
+    return response.status(404).json({ error: "Todo not found" });
+  }
+  request.user = user;
+  request.todo = foundTodo;
+  next();
 }
 
 function findUserById(request, response, next) {
-  // Complete aqui
+  const { id } = request.params;
+  const user = users.find(user => user.id === id);
+  if (!user) {
+    return response.status(404).json({ error: "User not found" });
+  }
+  request.user = user;
+  return next();
 }
 
 app.post('/users', (request, response) => {
